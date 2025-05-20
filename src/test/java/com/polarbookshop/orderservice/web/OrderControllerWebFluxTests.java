@@ -1,10 +1,15 @@
 package com.polarbookshop.orderservice.web;
 
-import com.polarbookshop.orderservice.order.Order;
+import com.polarbookshop.orderservice.config.SecurityConfig;
 import com.polarbookshop.orderservice.order.OrderService;
+import com.polarbookshop.orderservice.order.domain.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -13,13 +18,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 @WebFluxTest(OrderController.class)
-public class OrderControllerWebFluxTests {
+@Import(SecurityConfig.class)
+class OrderControllerWebFluxTests {
 
     @Autowired
     private WebTestClient webClient;
 
     @MockitoBean
     private OrderService orderService;
+
+    @MockitoBean
+    ReactiveJwtDecoder reactiveJwtDecoder;
+
 
     @Test
     void whenBookNotAvailableThenRejectOrder() {
@@ -29,6 +39,9 @@ public class OrderControllerWebFluxTests {
                 .willReturn(Mono.just(expectedOrder));
 
         webClient
+                .mutateWith(SecurityMockServerConfigurers
+                        .mockJwt()
+                        .authorities(new SimpleGrantedAuthority("ROLE_customer")))
                 .post()
                 .uri("/orders")
                 .bodyValue(orderRequest)

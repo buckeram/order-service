@@ -1,6 +1,7 @@
 package com.polarbookshop.orderservice.order;
 
 import com.polarbookshop.orderservice.config.DataConfig;
+import com.polarbookshop.orderservice.order.domain.OrderStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;

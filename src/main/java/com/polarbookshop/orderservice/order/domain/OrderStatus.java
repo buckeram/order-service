@@ -1,4 +1,4 @@
-package com.polarbookshop.orderservice.order;
+package com.polarbookshop.orderservice.order.domain;
 
 public enum OrderStatus {
     ACCEPTED,
